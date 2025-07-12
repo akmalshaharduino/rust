@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rust Crafting Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      color: #c0392b;
+    }
+    input, button {
+      font-size: 1em;
+      padding: 10px;
+      margin-top: 10px;
+      width: 100%;
+    }
+    #result {
+      margin-top: 20px;
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 0 4px #ccc;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rust Crafting Calculator</h1>
+  <p>Enter number of 5.56 bullets:</p>
+  <input type="number" id="bullets" placeholder="How many bullets?" />
+  <button onclick="calculate()">Calculate</button>
+
+  <div id="result"></div>
+
+  <script>
+    function calculate() {
+      const bullets = parseInt(document.getElementById("bullets").value);
+      if (isNaN(bullets) || bullets < 1) {
+        document.getElementById("result").innerText = "Please enter a valid number.";
+        return;
+      }
+      const craftUnits = Math.ceil(bullets / 3);
+      const metal = craftUnits * 10;
+      const gunpowder = craftUnits * 5;
+      const time = craftUnits * 10;
+
+      document.getElementById("result").innerText =
+        `For ${bullets} bullets:\n\n🔩 Metal Fragments: ${metal}\n💣 Gunpowder: ${gunpowder}\n⏱ Crafting Time: ${time} seconds`;
+    }
+  </script>
+</body>
+</html>
