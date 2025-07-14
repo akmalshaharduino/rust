@@ -1,120 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Rust Full Satchel Calculator</title>
+  <meta charset="UTF-8" />
+  <title>Rust Crafting Calculator</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #1e1e1e;
-      color: #fff;
-      padding: 20px;
-      max-width: 1000px;
-      margin: auto;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .inventory-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 20px;
-    }
-    .item-card {
-      background: #2e2e2e;
-      border-radius: 12px;
-      padding: 10px;
-      text-align: center;
-      box-shadow: 0 0 5px rgba(0,0,0,0.5);
-    }
-    .item-card img {
-      width: 64px;
-      height: 64px;
-      object-fit: contain;
-    }
-    .item-name {
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    .item-qty input {
-      width: 80px;
-      padding: 5px;
-      text-align: center;
-      margin-top: 5px;
-    }
-    .calculator {
-      background: #2e2e2e;
-      padding: 15px;
-      margin-top: 30px;
-      border-radius: 10px;
-    }
-    .result {
-      margin-top: 10px;
-      font-size: 18px;
-      color: #00ff99;
-    }
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 2rem auto; line-height: 1.6; }
+    label { display: block; margin-top: 1rem; }
+    input[type="number"] { width: 100px; }
+    .output { background: #f0f0f0; padding: 1rem; margin-top: 1.5rem; border-radius: 4px; }
+    .details { display: none; margin-top: 1rem; padding: 0.5rem; background: #fff; border: 1px solid #ccc; border-radius: 5px; }
+    .visible { display: block; }
   </style>
 </head>
 <body>
-  <h1>📦 Rust Satchel Charge Calculator</h1>
-  <div class="inventory-grid">
-    <div class="item-card"><div class="item-name">Sulfur</div><div class="item-qty"><input type="number" id="sulfur" value="0"></div></div>
-    <div class="item-card"><div class="item-name">Charcoal</div><div class="item-qty"><input type="number" id="charcoal" value="0"></div></div>
-    <div class="item-card"><div class="item-name">Metal Fragments</div><div class="item-qty"><input type="number" id="metal_fragments" value="0"></div></div>
-    <div class="item-card"><div class="item-name">Cloth</div><div class="item-qty"><input type="number" id="cloth" value="0"></div></div>
-    <div class="item-card"><div class="item-name">Rope</div><div class="item-qty"><input type="number" id="rope" value="0"></div></div>
-    <div class="item-card"><div class="item-name">Small Stash</div><div class="item-qty"><input type="number" id="small_stash" value="0"></div></div>
-    <div class="item-card"><div class="item-name">Beancan Grenade (in inventory)</div><div class="item-qty"><input type="number" id="beancan" value="0"></div></div>
+  <h1>Rust Crafting Calculator</h1>
+
+  <h2>Inventory Inputs</h2>
+  <div>
+    <label>Wood: <input type="number" id="wood" min="0" value="0" /></label>
+    <label>Sulfur Ore: <input type="number" id="sulfurOre" min="0" value="0" /></label>
+    <label>Metal Ore: <input type="number" id="metalOre" min="0" value="0" /></label>
+    <label>Charcoal: <input type="number" id="charcoal" min="0" value="0" /></label>
+    <label>Sulfur: <input type="number" id="Sulfur" min="0" value="0" /></label>
+    <label>Gunpowder: <input type="number" id="gunpowder" min="0" value="0" /></label>
+    <label>Metal Fragments: <input type="number" id="metalFragments" min="0" value="0" /></label>
+    <label>Beancan Grenades: <input type="number" id="beancan" min="0" value="0" /></label>
+    <label>Explosives: <input type="number" id="explosives" min="0" value="0" /></label>
+    <label>Cloth: <input type="number" id="cloth" min="0" value="0" /></label>
+    <label>Rope: <input type="number" id="rope" min="0" value="0" /></label>
+    <label>Small Stash: <input type="number" id="smallStash" min="0" value="0" /></label>
+    <label>Pipe: <input type="number" id="pipe" min="0" value="0" /></label>
+    <label>Low Grade Fuel: <input type="number" id="lgf" min="0" value="0" /></label>
   </div>
 
-  <div class="calculator">
-    <label><input type="checkbox" id="satchelChargeCheckbox"> Satchel Charge</label>
-    <div class="result" id="resultBox"></div>
+  <div class="output">
+    <h2>Craft Options</h2>
+    <label><input type="checkbox" id="craftSatchel"> Craft Satchels</label>
+    <div id="satchelDetails" class="details">
+      <strong>Requirements:</strong>
+      <ul>
+        <li>4 Beancan Grenades</li>
+        <li>1 Small Stash</li>
+        <li>1 Rope</li>
+        <li>Each Beancan: 60 Gunpowder + 20 Fragments</li>
+      </ul>
+      <p>Beancan Crafted: <span id="beancanMade">0</span></p>
+      <p>Satchels Crafted: <span id="satchelMade">0</span></p>
+    </div>
+
+    <label><input type="checkbox" id="craftRocket"> Craft Rockets</label>
+    <div id="rocketDetails" class="details">
+      <strong>Requirements:</strong>
+      <ul>
+        <li>10 Explosives</li>
+        <li>150 Gunpowder</li>
+        <li>2 Pipes</li>
+        <li>Each Explosive: 50 Gunpowder, 10 Sulfur, 10 Fragments, 3 LGF</li>
+      </ul>
+      <p>Explosives Crafted: <span id="explosivesMade">0</span></p>
+      <p>Rockets Crafted: <span id="rocketMade">0</span></p>
+    </div>
+
+    <h3>Remaining Inventory</h3>
+    <p>Sulfur: <span id="remainSulfur">0</span></p>
+    <p>Charcoal: <span id="remainCharcoal">0</span></p>
+    <p>Gunpowder: <span id="remainGunpowder">0</span></p>
+    <p>Fragments: <span id="remainFragments">0</span></p>
+    <p>Beancan Grenades: <span id="remainBeancan">0</span></p>
+    <p>Stashes: <span id="remainStash">0</span></p>
+    <p>Rope: <span id="remainRope">0</span></p>
+    <p>Pipes: <span id="remainPipe">0</span></p>
+    <p>Explosives: <span id="remainExplosives">0</span></p>
+    <p>Low Grade Fuel: <span id="remainLGF">0</span></p>
   </div>
 
   <script>
-    const satchelChargeCheckbox = document.getElementById("satchelChargeCheckbox");
-    const resultBox = document.getElementById("resultBox");
+    const inputs = ['wood','sulfurOre','metalOre','charcoal','Sulfur','gunpowder','metalFragments','beancan','explosives','cloth','rope','smallStash','pipe','lgf'];
+    inputs.forEach(id => document.getElementById(id).addEventListener('input', update));
+    document.getElementById('craftSatchel').addEventListener('change', () => {
+      document.getElementById('satchelDetails').classList.toggle('visible');
+      update();
+    });
+    document.getElementById('craftRocket').addEventListener('change', () => {
+      document.getElementById('rocketDetails').classList.toggle('visible');
+      update();
+    });
 
-    function getVal(id) {
-      return parseFloat(document.getElementById(id).value) || 0;
-    }
+    function update() {
+      const get = id => +document.getElementById(id).value;
+      const satchelChecked = document.getElementById('craftSatchel').checked;
+      const rocketChecked = document.getElementById('craftRocket').checked;
 
-    function updateResult() {
-      if (!satchelChargeCheckbox.checked) {
-        resultBox.innerHTML = "";
-        return;
+      const sulfurOre = get('sulfurOre'), wood = get('wood');
+      const sulfurFromOre = Math.min(sulfurOre, Math.floor(wood * 2.5));
+      let sulfur = get('Sulfur') + sulfurFromOre;
+      let charcoal = get('charcoal');
+
+      let gunpowder = get('gunpowder');
+      let fragments = get('metalFragments') + get('metalOre');
+      let beancan = get('beancan');
+      let stash = get('smallStash') + Math.floor(get('cloth') / 10);
+      let rope = get('rope');
+      let explosives = get('explosives');
+      let pipe = get('pipe');
+      let lgf = get('lgf');
+
+      let craftableGunpowder = 0;
+      if (satchelChecked || rocketChecked) {
+        craftableGunpowder = Math.min(Math.floor(sulfur / 2), Math.floor(charcoal / 3));
+        gunpowder += craftableGunpowder;
+        sulfur -= craftableGunpowder * 2;
+        charcoal -= craftableGunpowder * 3;
       }
 
-      const sulfur = getVal("sulfur");
-      const charcoal = getVal("charcoal");
-      const metal = getVal("metal_fragments");
-      const cloth = getVal("cloth");
-      const rope = getVal("rope");
-      const stash = getVal("small_stash");
-      const beancan = getVal("beancan");
+      let beancanMade = 0;
+      let satchelCount = 0;
+      if (satchelChecked) {
+        beancanMade = Math.floor(Math.min(gunpowder / 60, fragments / 20));
+        gunpowder -= beancanMade * 60;
+        fragments -= beancanMade * 20;
+        beancan += beancanMade;
 
-      // Gunpowder from raw (2 sulfur + 3 charcoal = 1 GP)
-      const possibleGP = Math.min(Math.floor(sulfur / 2), Math.floor(charcoal / 3));
-      const craftableBeancanFromRaw = Math.min(Math.floor(possibleGP / 60), Math.floor(metal / 20));
-      const totalBeancan = beancan + craftableBeancanFromRaw;
+        satchelCount = Math.floor(Math.min(beancan / 4, stash, rope));
+        beancan -= satchelCount * 4;
+        stash -= satchelCount;
+        rope -= satchelCount;
+      }
 
-      const maxSatchel = Math.min(
-        Math.floor(totalBeancan / 4),
-        Math.floor(stash / 1),
-        Math.floor(rope / 1),
-        Math.floor(cloth / 10)
-      );
+      let explosivesMade = 0;
+      let rocketCount = 0;
+      if (rocketChecked) {
+        explosivesMade = Math.floor(Math.min(
+          gunpowder / 50,
+          sulfur / 10,
+          fragments / 10,
+          lgf / 3
+        ));
+        gunpowder -= explosivesMade * 50;
+        sulfur -= explosivesMade * 10;
+        fragments -= explosivesMade * 10;
+        lgf -= explosivesMade * 3;
+        explosives += explosivesMade;
 
-      resultBox.innerHTML = `💣 You can craft <b>${maxSatchel}</b> Satchel Charges
-        <br>🔧 (${beancan} Beancans in inventory, ${craftableBeancanFromRaw} can be crafted from raw)`;
+        rocketCount = Math.floor(Math.min(explosives / 10, gunpowder / 150, pipe / 2));
+        explosives -= rocketCount * 10;
+        gunpowder -= rocketCount * 150;
+        pipe -= rocketCount * 2;
+      }
+
+      const set = (id, val) => document.getElementById(id).innerText = Math.max(0, Math.floor(val));
+      set('remainSulfur', sulfur);
+      set('remainCharcoal', charcoal);
+      set('remainGunpowder', gunpowder);
+      set('remainFragments', fragments);
+      set('remainBeancan', beancan);
+      set('remainStash', stash);
+      set('remainRope', rope);
+      set('remainPipe', pipe);
+      set('remainExplosives', explosives);
+      set('remainLGF', lgf);
+      set('beancanMade', beancanMade);
+      set('satchelMade', satchelCount);
+      set('explosivesMade', explosivesMade);
+      set('rocketMade', rocketCount);
     }
 
-    satchelChargeCheckbox.addEventListener("change", updateResult);
-    document.querySelectorAll("input[type='number']").forEach(input => {
-      input.addEventListener("input", updateResult);
-    });
+    update();
   </script>
 </body>
 </html>
+
