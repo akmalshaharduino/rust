@@ -44,6 +44,7 @@
         <li>1 Rope</li>
         <li>Each Beancan: 60 Gunpowder + 20 Fragments</li>
       </ul>
+      <label>How many Satchels to craft: <input type="number" id="desiredSatchels" min="0" value="0"></label>
       <p>Beancan Crafted: <span id="beancanMade">0</span></p>
       <p>Satchels Crafted: <span id="satchelMade">0</span></p>
     </div>
@@ -57,6 +58,7 @@
         <li>2 Pipes</li>
         <li>Each Explosive: 50 Gunpowder, 10 Sulfur, 10 Fragments, 3 LGF</li>
       </ul>
+      <label>How many Rockets to craft: <input type="number" id="desiredRockets" min="0" value="0"></label>
       <p>Explosives Crafted: <span id="explosivesMade">0</span></p>
       <p>Rockets Crafted: <span id="rocketMade">0</span></p>
     </div>
@@ -75,8 +77,11 @@
   </div>
 
   <script>
-    const inputs = ['wood','sulfurOre','metalOre','charcoal','Sulfur','gunpowder','metalFragments','beancan','explosives','cloth','rope','smallStash','pipe','lgf'];
-    inputs.forEach(id => document.getElementById(id).addEventListener('input', update));
+    const inputs = ['wood','sulfurOre','metalOre','charcoal','Sulfur','gunpowder','metalFragments','beancan','explosives','cloth','rope','smallStash','pipe','lgf','desiredSatchels','desiredRockets'];
+    inputs.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', update);
+    });
     document.getElementById('craftSatchel').addEventListener('change', () => {
       document.getElementById('satchelDetails').classList.toggle('visible');
       update();
@@ -87,7 +92,7 @@
     });
 
     function update() {
-      const get = id => +document.getElementById(id).value;
+      const get = id => +document.getElementById(id)?.value || 0;
       const satchelChecked = document.getElementById('craftSatchel').checked;
       const rocketChecked = document.getElementById('craftRocket').checked;
 
@@ -105,47 +110,61 @@
       let pipe = get('pipe');
       let lgf = get('lgf');
 
-      let craftableGunpowder = 0;
-      if (satchelChecked || rocketChecked) {
-        craftableGunpowder = Math.min(Math.floor(sulfur / 2), Math.floor(charcoal / 3));
-        gunpowder += craftableGunpowder;
-        sulfur -= craftableGunpowder * 2;
-        charcoal -= craftableGunpowder * 3;
-      }
-
-      let beancanMade = 0;
-      let satchelCount = 0;
-      if (satchelChecked) {
-        beancanMade = Math.floor(Math.min(gunpowder / 60, fragments / 20));
-        gunpowder -= beancanMade * 60;
-        fragments -= beancanMade * 20;
-        beancan += beancanMade;
-
-        satchelCount = Math.floor(Math.min(beancan / 4, stash, rope));
-        beancan -= satchelCount * 4;
-        stash -= satchelCount;
-        rope -= satchelCount;
-      }
+      let craftableGunpowder = Math.min(Math.floor(sulfur / 2), Math.floor(charcoal / 3));
+      gunpowder += craftableGunpowder;
+      sulfur -= craftableGunpowder * 2;
+      charcoal -= craftableGunpowder * 3;
 
       let explosivesMade = 0;
       let rocketCount = 0;
       if (rocketChecked) {
-        explosivesMade = Math.floor(Math.min(
+        const desiredRockets = get('desiredRockets');
+        const requiredExplosives = desiredRockets * 10;
+        const requiredGunpowder = desiredRockets * 150;
+        const requiredPipes = desiredRockets * 2;
+
+        const possibleExplosives = Math.floor(Math.min(
           gunpowder / 50,
           sulfur / 10,
           fragments / 10,
           lgf / 3
         ));
-        gunpowder -= explosivesMade * 50;
-        sulfur -= explosivesMade * 10;
-        fragments -= explosivesMade * 10;
-        lgf -= explosivesMade * 3;
-        explosives += explosivesMade;
+        const makeExplosives = Math.min(requiredExplosives, possibleExplosives);
 
-        rocketCount = Math.floor(Math.min(explosives / 10, gunpowder / 150, pipe / 2));
+        gunpowder -= makeExplosives * 50;
+        sulfur -= makeExplosives * 10;
+        fragments -= makeExplosives * 10;
+        lgf -= makeExplosives * 3;
+        explosives += makeExplosives;
+        explosivesMade = makeExplosives;
+
+        const possibleRockets = Math.floor(Math.min(explosives / 10, gunpowder / 150, pipe / 2));
+        rocketCount = Math.min(possibleRockets, desiredRockets);
+
         explosives -= rocketCount * 10;
         gunpowder -= rocketCount * 150;
         pipe -= rocketCount * 2;
+      }
+
+      let beancanMade = 0;
+      let satchelCount = 0;
+      if (satchelChecked) {
+        const desiredSatchels = get('desiredSatchels');
+        const requiredBeancans = desiredSatchels * 4;
+
+        const possibleBeancans = Math.floor(Math.min(gunpowder / 60, fragments / 20));
+        beancanMade = Math.min(possibleBeancans, requiredBeancans - beancan);
+
+        gunpowder -= beancanMade * 60;
+        fragments -= beancanMade * 20;
+        beancan += beancanMade;
+
+        const possibleSatchels = Math.floor(Math.min(beancan / 4, stash, rope));
+        satchelCount = Math.min(possibleSatchels, desiredSatchels);
+
+        beancan -= satchelCount * 4;
+        stash -= satchelCount;
+        rope -= satchelCount;
       }
 
       const set = (id, val) => document.getElementById(id).innerText = Math.max(0, Math.floor(val));
@@ -169,4 +188,5 @@
   </script>
 </body>
 </html>
+
 
