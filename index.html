@@ -68,7 +68,7 @@
       { id: "Gunpowder", label: "Craft Gunpowder", requires: { Sulfur: 2, charcoal: 3 } },
       { id: "Satchel", label: "Craft Satchel Charges", requires: { gunpowder: 240, fragments: 80, cloth: 10, rope: 1 } },
       { id: "Rocket", label: "Craft Rockets", requires: { gunpowder: 650, Sulfur: 100, fragments: 100, lgf: 30, pipe: 2 } },
-      { id: "ExplosiveAmmo", label: "Craft Explosive Ammo", requires: { gunpowder: 20, Sulfur: 10, fragments: 10 } },
+      { id: "ExplosiveAmmo", label: "Craft Explosive Ammo", requires: { gunpowder: 10, Sulfur: 5, fragments: 5 } },
       { id: "RifleAmmo", label: "Craft 5.56 Rifle Ammo", requires: { gunpowder: 5, fragments: 10 } },
       { id: "PistolAmmo", label: "Craft Pistol Ammo", requires: { gunpowder: 5, fragments: 10 } },
       { id: "C4", label: "Craft C4", requires: { explosives: 20, cloth: 5, techTrash: 2 } }
@@ -147,6 +147,8 @@
             state[item] -= qty * craft.requires[item];
           }
 
+          if (id === "Gunpowder") state.gunpowder += qty;
+
           details.innerHTML = `<strong>Cost per unit:</strong>`;
           for (let item in craft.requires) {
             details.innerHTML += `<span>${item}: ${craft.requires[item]}</span>`;
@@ -155,7 +157,7 @@
         } else {
           amountInput.style.display = "none";
           details.innerHTML = "";
-          document.getElementById(`amount${id}`).value = 0;
+          document.getElementById(`amount${craft.id}`).value = 0;
         }
       });
 
@@ -183,9 +185,9 @@
     function init() {
       generateCraftOptions();
       inputIds.forEach(id => document.getElementById(id).addEventListener("input", update));
-      crafts.forEach(c => {
-        document.getElementById(`craft${c.id}`).addEventListener("change", update);
-        document.getElementById(`amount${c.id}`).addEventListener("input", update);
+      crafts.forEach(craft => {
+        document.getElementById(`craft${craft.id}`).addEventListener("change", update);
+        document.getElementById(`amount${craft.id}`).addEventListener("input", update);
       });
       update();
     }
