@@ -69,6 +69,8 @@
       { id: "PistolAmmo", label: "Craft Pistol Ammo", requires: { gunpowder: 5, fragments: 10 } },
       { id: "RifleAmmo", label: "Craft 5.56 Rifle Ammo", requires: { gunpowder: 5, fragments: 10 } },
       { id: "ExplosiveAmmo", label: "Craft Explosive Ammo", requires: { gunpowder: 10, Sulfur: 5, fragments: 5 } },
+      { id: "Explosives", label: "Craft Explosives", requires: { gunpowder: 50, Sulfur: 10, fragments: 10, lgf: 3 } },
+      { id: "Beancan", label: "Craft Beancan Grenade", requires: { gunpowder: 60, fragments: 20 } },
       { id: "Satchel", label: "Craft Satchel Charges", requires: { gunpowder: 240, fragments: 80, cloth: 10, rope: 1 } },
       { id: "Rocket", label: "Craft Rockets", requires: { gunpowder: 150, explosives: 20, pipe: 2 } },
       { id: "C4", label: "Craft C4", requires: { explosives: 20, cloth: 5, techTrash: 2 } }
@@ -173,7 +175,8 @@
         pipe: state.pipe,
         lgf: state.lgf,
         techTrash: state.techTrash,
-        explosives: state.explosives
+        explosives: state.explosives,
+        beancan: state.Beancan
       };
 
       for (let key in out) {
