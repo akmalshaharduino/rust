@@ -5,107 +5,192 @@
   <title>Rust Crafting Calculator</title>
   <style>
     body { font-family: Arial, sans-serif; max-width: 1100px; margin: 2rem auto; line-height: 1.6; }
-    .section { margin-bottom: 2rem; }
-    .grid-inputs {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-    label {
-      display: flex;
-      align-items: center;
-      font-weight: bold;
-    }
-    label img {
-      width: 24px;
-      height: 24px;
-      margin-right: 8px;
-    }
-    input[type="number"] {
-      width: 80px;
-      padding: 0.3rem;
-      font-size: 1rem;
-      margin-left: auto;
-    }
-    .output {
-      background: #f0f0f0;
-      padding: 1rem;
-      margin-top: 1.5rem;
-      border-radius: 4px;
-    }
-    .details {
-      display: none;
-      margin-top: 1rem;
-      padding: 0.5rem;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    .visible { display: block; }
-    h2 { border-bottom: 1px solid #ccc; padding-bottom: 0.3rem; }
-    .checkbox-group { margin-top: 1rem; }
-    .checkbox-group label {
-      display: block;
-      font-weight: normal;
-      margin: 0.5rem 0;
-    }
+    .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    label { display: flex; align-items: center; font-weight: bold; margin-bottom: .5rem; }
+    input[type="number"] { width: 80px; padding: 0.3rem; font-size: 1rem; margin-left: auto; }
+    .output { background: #f0f0f0; padding: 1rem; margin-top: 1.5rem; border-radius: 4px; }
+    .output .row { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+    .output .cell { min-width: 120px; }
+    .craft-options { margin-top: 2rem; }
+    .craft-group { background: #f9f9f9; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid #888; }
+    .craft-amount-input { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
+    .details { margin-top: 0.5rem; padding-left: 1.5rem; color: #444; }
+    .details span { display: block; margin-bottom: 0.3rem; }
   </style>
 </head>
 <body>
-  <h1>🛠️ Rust Crafting Calculator</h1>
+  <h1>⚒️ Rust Crafting Calculator</h1>
 
-  <div class="section">
-    <h2>🔧 Basic Materials</h2>
-    <div class="grid-inputs">
-      <label><img src="https://static.wikia.nocookie.net/play-rust/images/d/db/Wood_icon.png" /> Wood <input type="number" id="wood" min="0" value="0" /></label>
-      <label><img src="https://static.wikia.nocookie.net/play-rust/images/f/fd/Sulfur_Ore_icon.png" /> Sulfur Ore <input type="number" id="sulfurOre" min="0" value="0" /></label>
-      <label><img src="https://static.wikia.nocookie.net/play-rust/images/d/db/Metal_Ore_icon.png" /> Metal Ore <input type="number" id="metalOre" min="0" value="0" /></label>
-      <label><img src="https://static.wikia.nocookie.net/play-rust/images/e/e6/Charcoal_icon.png" /> Charcoal <input type="number" id="charcoal" min="0" value="0" /></label>
-      <label><img src="https://static.wikia.nocookie.net/play-rust/images/6/6f/Sulfur_icon.png" /> Sulfur <input type="number" id="Sulfur" min="0" value="0" /></label>
-      <label><img src="https://static.wikia.nocookie.net/play-rust/images/0/09/Gun_Powder_icon.png" /> Gunpowder <input type="number" id="gunpowder" min="0" value="0" /></label>
-    </div>
+  <div class="grid-inputs">
+    <label>Wood: <input type="number" id="wood" value="0"></label>
+    <label>Sulfur Ore: <input type="number" id="sulfurOre" value="0"></label>
+    <label>Metal Ore: <input type="number" id="metalOre" value="0"></label>
+    <label>Charcoal: <input type="number" id="charcoal" value="0"></label>
+    <label>Sulfur: <input type="number" id="Sulfur" value="0"></label>
+    <label>Gunpowder: <input type="number" id="gunpowder" value="0"></label>
+    <label>Metal Fragments: <input type="number" id="metalFragments" value="0"></label>
+    <label>Cloth: <input type="number" id="cloth" value="0"></label>
+    <label>Rope: <input type="number" id="rope" value="0"></label>
+    <label>Small Stash: <input type="number" id="smallStash" value="0"></label>
+    <label>Pipe: <input type="number" id="pipe" value="0"></label>
+    <label>Low Grade Fuel: <input type="number" id="lgf" value="0"></label>
+    <label>Tech Trash: <input type="number" id="techTrash" value="0"></label>
+    <label>Explosives: <input type="number" id="explosives" value="0"></label>
   </div>
 
-  <div class="section">
-    <h2>🔩 Components</h2>
-    <div class="grid-inputs">
-      <label><img src="https://static.wikia.nocookie.net/play-rust/images/b/bd/Metal_Fragments_icon.png" /> Metal Fragments <input type="number" id="metalFragments" min="0" value="0" /></label>
-      <label><img src="https://static.wikia.nocookie.net/play-rust/images/e/e8/Beancan_Grenade_icon.png" /> Beancan Grenades <input type="number" id="beancan" min="0" value="0" /></label>
-      <label><img src="https://static.wikia.nocookie.net/play-rust/images/2/26/Explosives_icon.png" /> Explosives <input type="number" id="explosives" min="0" value="0" /></label>
-      <label><img src="https://static.wikia.nocookie.net/play-rust/images/5/54/Cloth_icon.png" /> Cloth <input type="number" id="cloth" min="0" value="0" /></label>
-      <label><img src="https://static.wikia.nocookie.net/play-rust/images/0/06/Rope_icon.png" /> Rope <input type="number" id="rope" min="0" value="0" /></label>
-      <label><img src="https://static.wikia.nocookie.net/play-rust/images/5/59/Small_Stash_icon.png" /> Small Stash <input type="number" id="smallStash" min="0" value="0" /></label>
-      <label><img src="https://static.wikia.nocookie.net/play-rust/images/0/0c/Metal_Pipe_icon.png" /> Pipe <input type="number" id="pipe" min="0" value="0" /></label>
-      <label><img src="https://static.wikia.nocookie.net/play-rust/images/c/cf/Low_Grade_Fuel_icon.png" /> Low Grade Fuel <input type="number" id="lgf" min="0" value="0" /></label>
-    </div>
-  </div>
-
-  <div class="section checkbox-group">
-    <h2>🧩 Craftable Items</h2>
-    <label><input type="checkbox" id="craftGunpowder" /> Craft Gunpowder</label>
-    <label><input type="checkbox" id="craftBeancan" /> Craft Beancan Grenades</label>
-    <label><input type="checkbox" id="craftSatchel" /> Craft Satchel Charges</label>
-    <label><input type="checkbox" id="craftExplosives" /> Craft Explosives</label>
-    <label><input type="checkbox" id="craftRocket" /> Craft Rockets</label>
-    <label><input type="checkbox" id="craftExplosiveAmmo" /> Craft Explosive Ammo</label>
-    <label><input type="checkbox" id="craftRifleAmmo" /> Craft 5.56 Rifle Ammo</label>
-    <label><input type="checkbox" id="craftPistolAmmo" /> Craft Pistol Ammo</label>
-  </div>
+  <div class="craft-options" id="craftOptions"></div>
 
   <div class="output">
-    <h2>🧾 Remaining Inventory Summary</h2>
-    <p>Sulfur: <span id="remainSulfur">0</span></p>
-    <p>Charcoal: <span id="remainCharcoal">0</span></p>
-    <p>Gunpowder: <span id="remainGunpowder">0</span></p>
-    <p>Fragments: <span id="remainFragments">0</span></p>
-    <p>Beancan Grenades: <span id="remainBeancan">0</span></p>
-    <p>Stashes: <span id="remainStash">0</span></p>
-    <p>Rope: <span id="remainRope">0</span></p>
-    <p>Pipes: <span id="remainPipe">0</span></p>
-    <p>Explosives: <span id="remainExplosives">0</span></p>
-    <p>Low Grade Fuel: <span id="remainLGF">0</span></p>
+    <h2>📋 Remaining Inventory</h2>
+    <div class="row">
+      <div class="cell">Wood: <span id="remainWood">0</span></div>
+      <div class="cell">Sulfur: <span id="remainSulfur">0</span></div>
+      <div class="cell">Charcoal: <span id="remainCharcoal">0</span></div>
+      <div class="cell">Gunpowder: <span id="remainGunpowder">0</span></div>
+      <div class="cell">Fragments: <span id="remainFragments">0</span></div>
+      <div class="cell">Cloth: <span id="remainCloth">0</span></div>
+      <div class="cell">Stashes: <span id="remainStash">0</span></div>
+      <div class="cell">Rope: <span id="remainRope">0</span></div>
+      <div class="cell">Pipes: <span id="remainPipe">0</span></div>
+      <div class="cell">LGF: <span id="remainLGF">0</span></div>
+      <div class="cell">Tech Trash: <span id="remainTechTrash">0</span></div>
+      <div class="cell">Explosives: <span id="remainExplosives">0</span></div>
+    </div>
   </div>
 
-  <!-- Note: Full crafting logic + JS should be placed below -->
+  <script>
+    const inputIds = [
+      "wood", "sulfurOre", "metalOre", "charcoal", "Sulfur", "gunpowder", "metalFragments",
+      "cloth", "rope", "smallStash", "pipe", "lgf", "techTrash", "explosives"
+    ];
+
+    const crafts = [
+      { id: "Gunpowder", label: "Craft Gunpowder", requires: { Sulfur: 2, charcoal: 3 } },
+      { id: "Satchel", label: "Craft Satchel Charges", requires: { gunpowder: 240, fragments: 80, cloth: 10, rope: 1 } },
+      { id: "Rocket", label: "Craft Rockets", requires: { gunpowder: 650, Sulfur: 100, fragments: 100, lgf: 30, pipe: 2 } },
+      { id: "ExplosiveAmmo", label: "Craft Explosive Ammo", requires: { gunpowder: 20, Sulfur: 10, fragments: 10 } },
+      { id: "RifleAmmo", label: "Craft 5.56 Rifle Ammo", requires: { gunpowder: 5, fragments: 10 } },
+      { id: "PistolAmmo", label: "Craft Pistol Ammo", requires: { gunpowder: 5, fragments: 10 } },
+      { id: "C4", label: "Craft C4", requires: { explosives: 20, cloth: 5, techTrash: 2 } }
+    ];
+
+    function getInventory() {
+      const inv = {};
+      inputIds.forEach(id => inv[id] = +document.getElementById(id).value);
+
+      let wood = inv.wood;
+      const sulfurOre = inv.sulfurOre;
+      const metalOre = inv.metalOre;
+
+      const smeltSulfur = Math.min(sulfurOre, Math.floor(wood / 2.5));
+      const woodUsedSulfur = smeltSulfur * 2.5;
+      inv.Sulfur += smeltSulfur;
+      wood -= woodUsedSulfur;
+
+      const smeltFragments = Math.min(metalOre, Math.floor(wood / 2.5));
+      const woodUsedFragments = smeltFragments * 2.5;
+      inv.fragments = inv.metalFragments + smeltFragments;
+      wood -= woodUsedFragments;
+
+      const totalWoodUsed = woodUsedSulfur + woodUsedFragments;
+      inv.charcoal += Math.floor(totalWoodUsed * 0.75);
+      inv.wood = Math.max(0, Math.floor(wood));
+
+      return inv;
+    }
+
+    function deepCopy(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function generateCraftOptions() {
+      const container = document.getElementById("craftOptions");
+      container.innerHTML = "";
+      crafts.forEach(craft => {
+        container.innerHTML += `
+          <div class="craft-group">
+            <label><input type="checkbox" id="craft${craft.id}"> ${craft.label}</label>
+            <div class="craft-amount-input" id="input${craft.id}" style="display:none">
+              How many to craft:
+              <input type="number" id="amount${craft.id}" value="0" min="0">
+            </div>
+            <div class="details" id="details${craft.id}"></div>
+          </div>`;
+      });
+    }
+
+    function update() {
+      let inv = getInventory();
+      let state = deepCopy(inv);
+
+      crafts.forEach(craft => {
+        const id = craft.id;
+        const checked = document.getElementById(`craft${id}`).checked;
+        const amountInput = document.getElementById(`input${id}`);
+        const amountField = document.getElementById(`amount${id}`);
+        const details = document.getElementById(`details${id}`);
+
+        if (checked) {
+          amountInput.style.display = "inline-flex";
+          let maxCraft = Infinity;
+          for (let item in craft.requires) {
+            const have = state[item] ?? 0;
+            const need = craft.requires[item];
+            maxCraft = Math.min(maxCraft, Math.floor(have / need));
+          }
+
+          amountField.max = maxCraft;
+          const qty = Math.min(+amountField.value, maxCraft);
+          amountField.value = qty;
+
+          for (let item in craft.requires) {
+            state[item] -= qty * craft.requires[item];
+          }
+
+          details.innerHTML = `<strong>Cost per unit:</strong>`;
+          for (let item in craft.requires) {
+            details.innerHTML += `<span>${item}: ${craft.requires[item]}</span>`;
+          }
+          details.innerHTML += `<span>🧮 Max craftable: ${maxCraft}</span>`;
+        } else {
+          amountInput.style.display = "none";
+          details.innerHTML = "";
+          document.getElementById(`amount${id}`).value = 0;
+        }
+      });
+
+      const out = {
+        wood: state.wood,
+        Sulfur: state.Sulfur,
+        charcoal: state.charcoal,
+        gunpowder: state.gunpowder,
+        fragments: state.fragments,
+        cloth: state.cloth,
+        smallStash: state.smallStash,
+        rope: state.rope,
+        pipe: state.pipe,
+        lgf: state.lgf,
+        techTrash: state.techTrash,
+        explosives: state.explosives
+      };
+
+      for (let key in out) {
+        const el = document.getElementById("remain" + key.charAt(0).toUpperCase() + key.slice(1));
+        if (el) el.innerText = Math.max(0, out[key]);
+      }
+    }
+
+    function init() {
+      generateCraftOptions();
+      inputIds.forEach(id => document.getElementById(id).addEventListener("input", update));
+      crafts.forEach(c => {
+        document.getElementById(`craft${c.id}`).addEventListener("change", update);
+        document.getElementById(`amount${c.id}`).addEventListener("input", update);
+      });
+      update();
+    }
+
+    init();
+  </script>
 </body>
 </html>
