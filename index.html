@@ -16,6 +16,7 @@
     .craft-amount-input { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
     .details { margin-top: 0.5rem; padding-left: 1.5rem; color: #444; }
     .details span { display: block; margin-bottom: 0.3rem; }
+    .low-inventory { color: red; font-weight: bold; margin-top: 0.5rem; }
   </style>
 </head>
 <body>
@@ -36,6 +37,7 @@
     <label>Low Grade Fuel: <input type="number" id="lgf" value="0"></label>
     <label>Tech Trash: <input type="number" id="techTrash" value="0"></label>
     <label>Explosives: <input type="number" id="explosives" value="0"></label>
+    <label>Beancan: <input type="number" id="beancan" value="0"></label>
   </div>
 
   <div class="craft-options" id="craftOptions"></div>
@@ -62,18 +64,18 @@
   <script>
     const inputIds = [
       "wood", "sulfurOre", "metalOre", "charcoal", "Sulfur", "gunpowder", "metalFragments",
-      "cloth", "rope", "smallStash", "pipe", "lgf", "techTrash", "explosives"
+      "cloth", "rope", "smallStash", "pipe", "lgf", "techTrash", "explosives", "beancan"
     ];
 
     const crafts = [
       { id: "Gunpowder", label: "Craft Gunpowder", requires: { Sulfur: 2, charcoal: 3 } },
-      { id: "PistolAmmo", label: "Craft Pistol Ammo", requires: { gunpowder: 5, fragments: 10 } },
-      { id: "RifleAmmo", label: "Craft 5.56 Rifle Ammo", requires: { gunpowder: 5, fragments: 10 } },
-      { id: "ExplosiveAmmo", label: "Craft Explosive Ammo", requires: { gunpowder: 10, Sulfur: 5, fragments: 5 } },
-      { id: "Explosives", label: "Craft Explosives", requires: { gunpowder: 50, Sulfur: 10, fragments: 10, lgf: 3 } },
-      { id: "Beancan", label: "Craft Beancan Grenade", requires: { gunpowder: 60, fragments: 20 } },
-      { id: "Satchel", label: "Craft Satchel Charges", requires: { gunpowder: 240, fragments: 80, cloth: 10, rope: 1 } },
-      { id: "Rocket", label: "Craft Rockets", requires: { gunpowder: 150, explosives: 20, pipe: 2 } },
+      { id: "PistolAmmo", label: "Craft Pistol Ammo", requires: { gunpowder: 5, metalFragments: 10 } },
+      { id: "RifleAmmo", label: "Craft 5.56 Rifle Ammo", requires: { gunpowder: 5, metalFragments: 10 } },
+      { id: "ExplosiveAmmo", label: "Craft Explosive Ammo", requires: { gunpowder: 10, Sulfur: 5, metalFragments: 5 } },
+      { id: "Explosives", label: "Craft Explosives", requires: { gunpowder: 50, Sulfur: 10, metalFragments: 10, lgf: 3 } },
+      { id: "Beancan", label: "Craft Beancan Grenade", requires: { gunpowder: 60, metalFragments: 20 } },
+      { id: "Satchel", label: "Craft Satchel Charges", requires: { beancan: 4, smallStash: 1, rope: 1 } },
+      { id: "Rocket", label: "Craft Rockets", requires: { gunpowder: 150, explosives: 10, pipe: 2 } },
       { id: "C4", label: "Craft C4", requires: { explosives: 20, cloth: 5, techTrash: 2 } }
     ];
 
@@ -82,21 +84,15 @@
       inputIds.forEach(id => inv[id] = +document.getElementById(id).value);
 
       let wood = inv.wood;
-      const sulfurOre = inv.sulfurOre;
-      const metalOre = inv.metalOre;
-
-      const smeltSulfur = Math.min(sulfurOre, Math.floor(wood / 2.5));
-      const woodUsedSulfur = smeltSulfur * 2.5;
+      const smeltSulfur = Math.min(inv.sulfurOre, Math.floor(wood / 2.5));
       inv.Sulfur += smeltSulfur;
-      wood -= woodUsedSulfur;
+      wood -= smeltSulfur * 2.5;
 
-      const smeltFragments = Math.min(metalOre, Math.floor(wood / 2.5));
-      const woodUsedFragments = smeltFragments * 2.5;
-      inv.fragments = inv.metalFragments + smeltFragments;
-      wood -= woodUsedFragments;
+      const smeltFragments = Math.min(inv.metalOre, Math.floor(wood / 2.5));
+      inv.metalFragments += smeltFragments;
+      wood -= smeltFragments * 2.5;
 
-      const totalWoodUsed = woodUsedSulfur + woodUsedFragments;
-      inv.charcoal += Math.floor(totalWoodUsed * 0.75);
+      inv.charcoal += Math.floor((smeltSulfur + smeltFragments) * 2.5 * 0.75);
       inv.wood = Math.max(0, Math.floor(wood));
 
       return inv;
@@ -151,16 +147,21 @@
           }
 
           if (id === "Gunpowder") state.gunpowder += qty;
+          if (id === "Explosives") state.explosives += qty;
+          if (id === "Beancan") state.beancan += qty;
 
           details.innerHTML = `<strong>Cost per unit:</strong>`;
           for (let item in craft.requires) {
             details.innerHTML += `<span>${item}: ${craft.requires[item]}</span>`;
           }
           details.innerHTML += `<span>🧮 Max craftable: ${maxCraft}</span>`;
+          if (maxCraft === 0) {
+            details.innerHTML += `<div class="low-inventory">🔴 Not enough resources to craft!</div>`;
+          }
         } else {
           amountInput.style.display = "none";
           details.innerHTML = "";
-          document.getElementById(`amount${craft.id}`).value = 0;
+          amountField.value = 0;
         }
       });
 
@@ -169,15 +170,15 @@
         Sulfur: state.Sulfur,
         charcoal: state.charcoal,
         gunpowder: state.gunpowder,
-        fragments: state.fragments,
+        fragments: state.metalFragments,
         cloth: state.cloth,
-        smallStash: state.smallStash,
+        stash: state.smallStash,
         rope: state.rope,
         pipe: state.pipe,
-        lgf: state.lgf,
+        LGF: state.lgf,
         techTrash: state.techTrash,
         explosives: state.explosives,
-        beancan: state.Beancan
+        beancan: state.beancan
       };
 
       for (let key in out) {
